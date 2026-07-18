@@ -119,6 +119,7 @@ test('portfolio search yields to interaction and avoids multi-second main-thread
 test('the command palette enters a consistent cockpit route from landing', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Desktop keyboard-command regression')
   await page.goto('/')
+  await expect(page.getByRole('heading', { name: /inspect the cascade/i })).toBeVisible()
   await page.keyboard.press('Control+K')
   await page.getByRole('option', { name: /open evidence ledger/i }).click()
   await expect(page.getByRole('heading', { name: /trust is a product feature/i })).toBeFocused()

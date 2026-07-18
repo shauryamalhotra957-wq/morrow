@@ -1,0 +1,18 @@
+{
+  "name": "Morrow Crisis Rehearsal Lab",
+  "short_name": "Morrow",
+  "description": "Explore fictional crisis scenarios and compare transparent teaching-model trade-offs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07120f",
+  "theme_color": "#07120f",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/morrow-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

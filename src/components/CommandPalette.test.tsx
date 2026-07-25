@@ -22,4 +22,29 @@ describe('command palette', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  it('searches labels and hints, then wraps keyboard navigation', async () => {
+    const user = userEvent.setup()
+    const firstAction = vi.fn()
+    const secondAction = vi.fn()
+    render(
+      <CommandPalette
+        open
+        commands={[
+          { id: 'command', label: 'Open command center', hint: 'VIEW', action: firstAction },
+          { id: 'brief', label: 'Export decision brief', hint: 'DOCUMENT', action: secondAction },
+        ]}
+        onClose={vi.fn()}
+      />,
+    )
+
+    const input = screen.getByRole('combobox', { name: /search commands/i })
+    await user.type(input, 'document')
+    expect(screen.getByRole('option', { name: /export decision brief/i })).toBeVisible()
+    expect(screen.queryByRole('option', { name: /open command center/i })).not.toBeInTheDocument()
+
+    await user.clear(input)
+    await user.keyboard('{ArrowUp}{Enter}')
+    expect(secondAction).toHaveBeenCalledOnce()
+  })
 })

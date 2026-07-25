@@ -19,10 +19,15 @@ export function CommandPalette({ open, commands, onClose }: CommandPaletteProps)
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
-  const filtered = useMemo(
-    () => commands.filter((command) => command.label.toLowerCase().includes(query.trim().toLowerCase())),
-    [commands, query],
-  )
+  const filtered = useMemo(() => {
+    const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+    if (tokens.length === 0) return commands
+    return commands.filter((command) => {
+      const searchable = `${command.label} ${command.hint}`.toLowerCase()
+      return tokens.every((token) => searchable.includes(token))
+    })
+  }, [commands, query])
+  const safeActiveIndex = filtered.length === 0 ? 0 : Math.min(activeIndex, filtered.length - 1)
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -34,6 +39,12 @@ export function CommandPalette({ open, commands, onClose }: CommandPaletteProps)
       dialog.close()
     }
   }, [open])
+
+  useEffect(() => {
+    const active = filtered[safeActiveIndex]
+    if (!active) return
+    document.getElementById(`command-option-${active.id}`)?.scrollIntoView?.({ block: 'nearest' })
+  }, [filtered, safeActiveIndex])
 
   const run = (command: CommandItem) => {
     command.action()
@@ -65,9 +76,12 @@ export function CommandPalette({ open, commands, onClose }: CommandPaletteProps)
           value={query}
           onChange={(event) => { setQuery(event.target.value); setActiveIndex(0) }}
           onKeyDown={(event) => {
-            if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex((index) => Math.min(index + 1, filtered.length - 1)) }
-            if (event.key === 'ArrowUp') { event.preventDefault(); setActiveIndex((index) => Math.max(index - 1, 0)) }
-            if (event.key === 'Enter' && filtered[activeIndex]) run(filtered[activeIndex])
+            if (filtered.length === 0) return
+            if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex((index) => (index + 1) % filtered.length) }
+            if (event.key === 'ArrowUp') { event.preventDefault(); setActiveIndex((index) => (index - 1 + filtered.length) % filtered.length) }
+            if (event.key === 'Home') { event.preventDefault(); setActiveIndex(0) }
+            if (event.key === 'End') { event.preventDefault(); setActiveIndex(filtered.length - 1) }
+            if (event.key === 'Enter' && filtered[safeActiveIndex]) run(filtered[safeActiveIndex])
           }}
           placeholder="Go somewhere or run an action…"
           autoComplete="off"
@@ -75,7 +89,7 @@ export function CommandPalette({ open, commands, onClose }: CommandPaletteProps)
           aria-autocomplete="list"
           aria-expanded="true"
           aria-controls="command-options"
-          aria-activedescendant={filtered[activeIndex] ? `command-option-${filtered[activeIndex].id}` : undefined}
+          aria-activedescendant={filtered[safeActiveIndex] ? `command-option-${filtered[safeActiveIndex].id}` : undefined}
         />
         <kbd>ESC</kbd>
         <button className="command-close" type="button" onClick={onClose} aria-label="Close command palette"><X size={18} /></button>
@@ -88,8 +102,8 @@ export function CommandPalette({ open, commands, onClose }: CommandPaletteProps)
             type="button"
             role="option"
             tabIndex={-1}
-            aria-selected={index === activeIndex}
-            className={index === activeIndex ? 'active' : ''}
+            aria-selected={index === safeActiveIndex}
+            className={index === safeActiveIndex ? 'active' : ''}
             onMouseEnter={() => setActiveIndex(index)}
             onClick={() => run(command)}
           >
@@ -102,6 +116,7 @@ export function CommandPalette({ open, commands, onClose }: CommandPaletteProps)
       <footer>
         <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
         <span><kbd>↵</kbd> run</span>
+        <span className="command-count" role="status" aria-live="polite">{filtered.length} result{filtered.length === 1 ? '' : 's'}</span>
         <span className="command-signature">Morrow command fabric</span>
       </footer>
     </dialog>

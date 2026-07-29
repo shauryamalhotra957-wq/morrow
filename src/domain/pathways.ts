@@ -8,12 +8,6 @@ export interface CascadePathway {
   assumptionId: string
 }
 
-/**
- * The single source of truth for pathways shown in the atlas and evaluated by
- * the simulator. Weights are illustrative teaching assumptions, not causal
- * estimates. Delays are evaluated with linear interpolation between the
- * six-hour model ticks.
- */
 export const CASCADE_PATHWAYS: readonly CascadePathway[] = [
   { from: 'hazard', to: 'communications', weight: 0.58, delay: 0, assumptionId: 'ASM-PATH-001' },
   { from: 'hazard', to: 'infrastructure', weight: 0.63, delay: 0, assumptionId: 'ASM-PATH-002' },
@@ -35,9 +29,6 @@ export function getPathway(from: SystemNodeId, to: Exclude<SystemNodeId, 'hazard
   return pathway
 }
 
-/** Sample a delayed risk value without allowing information to travel earlier
- * than the declared lag. `current` enables interpolation between the previous
- * six-hour tick and a node already calculated at the current tick. */
 export function sampleDelayedRisk(
   history: readonly TrajectoryPoint[],
   key: keyof RiskState,

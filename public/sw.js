@@ -40,7 +40,6 @@ async function precacheBuild() {
         .filter((path) => path && (path.startsWith('./') || path.startsWith('/assets/')))
       queue.push(...nested.map((path) => new URL(path, url.href).href))
     } catch {
-      // A missing optional asset must not prevent the offline shell from installing.
     }
   }
 }

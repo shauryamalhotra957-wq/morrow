@@ -184,8 +184,6 @@ function createMetrics(scenario: Scenario, trajectory: TrajectoryPoint[]): Impac
 function runCore(scenario: Scenario, variation: ModelVariation = DEFAULT_VARIATION): CoreRun {
   const preset = getPreset(scenario.presetId)
   const fragility = (scenario.fragility / 100) * variation.fragility
-  // The first 15 points are the nominal exercise setting. Above that, one
-  // shared shock degrades route access and power/communications together.
   const correlatedStress = clamp((scenario.stress - 15) / 65, 0, 1)
   const routeFailure = 1 + correlatedStress * 0.34
   const powerFailure = 1 + correlatedStress * 0.29
@@ -200,8 +198,6 @@ function runCore(scenario: Scenario, variation: ModelVariation = DEFAULT_VARIATI
     const bias = preset.biases
     const cascade = variation.cascade * (1 + correlatedStress * 0.18)
 
-    // Access and power failures reduce the realized effect of interventions
-    // that depend on roads, electricity, communications, or cold chains.
     protection.infrastructure *= 1 - correlatedStress * 0.3
     protection.communications *= 1 - correlatedStress * 0.24
     protection.food *= 1 - correlatedStress * 0.2
@@ -361,8 +357,6 @@ function createSimulationAccumulator(scenario: Scenario): SimulationAccumulator 
 }
 
 function accumulateVariation(scenario: Scenario, accumulator: SimulationAccumulator): void {
-    // One shared draw creates correlated route/power/cascade deterioration;
-    // independent draws keep the envelope from collapsing to one dimension.
     const sharedShock = normalish(accumulator.random)
     const stressScale = 0.7 + (scenario.stress / 100) * 0.8
     const variation: ModelVariation = {
@@ -412,11 +406,6 @@ export function simulateScenario(scenario: Scenario, samples = 48): SimulationRe
   return finalizeSimulation(scenario, accumulator)
 }
 
-/**
- * Runs the same deterministic simulation as `simulateScenario`, but yields
- * between small variation batches so browsers and API servers remain
- * responsive. The metrics and checksum are identical to the synchronous run.
- */
 export async function simulateScenarioCooperatively(
   scenario: Scenario,
   samples = 48,

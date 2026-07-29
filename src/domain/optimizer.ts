@@ -105,8 +105,6 @@ function portfolioFromWinner(objective: OptimizerObjective, winner: ScreenedWinn
     objective,
     allocations: winner.allocations,
     metrics,
-    // The visible score is always recalculated from the full 48-variation
-    // winner metrics. It is not the nominal score used during screening.
     score: Number(scorePortfolio(metrics, objective).toFixed(2)),
   }
 }
@@ -153,11 +151,6 @@ export function optimizePortfolios(scenario: Scenario, candidates = DEFAULT_CAND
   return optimizePortfoliosWithDiagnostics(scenario, candidates).portfolios
 }
 
-/**
- * Cooperative form used by the browser and API. Screening and each full
- * sensitivity run yield in bounded batches, keeping navigation, cancellation,
- * health checks, and other requests responsive without changing the result.
- */
 export async function optimizePortfoliosCooperatively(
   scenario: Scenario,
   candidates = DEFAULT_CANDIDATE_COUNT,

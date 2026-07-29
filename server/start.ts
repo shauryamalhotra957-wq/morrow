@@ -31,7 +31,6 @@ async function main(): Promise<void> {
 try {
   await main()
 } catch (error) {
-  // Startup errors are reported once without serializing environment variables.
   console.error(error instanceof Error ? error.message : 'Morrow API failed to start.')
   process.exitCode = 1
 }

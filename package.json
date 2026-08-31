@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@fastify/helmet": "^13.1.0",
-    "@fastify/rate-limit": "^11.1.0",
+    "@fastify/rate-limit": "^11.2.0",
     "@fontsource-variable/manrope": "^5.2.8",
     "@fontsource/space-mono": "^5.2.9",
     "@fontsource/syncopate": "^5.2.8",

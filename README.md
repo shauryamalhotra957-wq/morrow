@@ -1,5 +1,8 @@
 # Morrow
 
+[![CI](https://github.com/shauryamalhotra957-wq/morrow/actions/workflows/ci.yml/badge.svg)](https://github.com/shauryamalhotra957-wq/morrow/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 > **Inspect the cascade. Compare the trade-offs.**
 
 Morrow is an open, local-first crisis rehearsal lab for facilitated teaching and tabletop exercises. It turns a fictional compound-shock archetype into a transparent 72-hour systems simulation, lets a user allocate a constrained budget, exposes illustrative pathways, applies a disclosed shared stress case, compares four seeded-search objective winners, and exports a reproducible decision brief.
